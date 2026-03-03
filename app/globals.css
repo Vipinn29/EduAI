@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Soft helper utilities (used sparingly alongside Tailwind utilities) */
+.soft-bg {
+  background: linear-gradient(180deg, rgba(59,130,246,0.06), rgba(241,245,249,0.02));
+}
+
+.soft-shadow {
+  box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+}

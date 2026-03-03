@@ -3,13 +3,28 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { classLevel, subject, chapter, duration } = body;
+    let { classLevel, subject, chapter, duration } = body;
 
-    if (!classLevel || !subject || !chapter || !duration) {
-      return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+    // basic validation: require all fields and ensure duration is a positive number
+    if (!classLevel || !subject || !chapter || duration == null) {
+      return NextResponse.json({ error: 'Missing parameters; please include classLevel, subject, chapter and duration' }, { status: 400 });
     }
 
-    const prompt = `Create a detailed lesson plan for class ${classLevel}, subject ${subject}, chapter ${chapter}. Duration: ${duration}.`;
+    // accept duration as a number or string like "15", "15 min", "15mins" etc.
+    if (typeof duration === 'string') {
+      // extract leading number
+      const parsed = parseInt(duration, 10);
+      duration = isNaN(parsed) ? null : parsed;
+    }
+
+    if (typeof duration !== 'number' || duration <= 0) {
+      return NextResponse.json({ error: 'Duration must be a positive number (minutes). You may pass a string like "15" or "15 min".' }, { status: 400 });
+    }
+
+    // The user prompt which will be presented to the AI model.  We keep
+    // the actual classroom instructions separate so that we can insert a
+    // clear system message describing the teacher persona below.
+    const userPrompt = `Create a detailed lesson plan for class ${classLevel}, subject ${subject}, chapter ${chapter}. Duration: ${duration} minutes.`;
 
     // NOTE: we're no longer using OpenAI.  the application has been
     // switched to a generic AI chatbot service that supports educational
@@ -53,8 +68,14 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model: groqModel,
         messages: [
-          { role: 'system', content: 'You are a helpful teaching assistant creating detailed lesson plans.' },
-          { role: 'user', content: prompt },
+          // enforced system persona for lesson formatting requirements
+          {
+            role: 'system',
+            content: `You are an experienced Indian school teacher following CBSE and NEP 2020 guidelines.\n
+Respond in simple language and structure your output with headings:\n- Learning Objectives\n- Introduction\n- Explanation\n- Activity\n- Homework\n Create practical, classroom-ready lesson plans suitable for Indian students.\n Keep explanations simple, interactive, and time-structured.\n
+Focus on engagement, examples, and learning outcomes.`,
+          },
+          { role: 'user', content: userPrompt },
         ],
         max_tokens: 1000,
       }),

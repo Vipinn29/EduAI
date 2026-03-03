@@ -8,6 +8,11 @@ export async function GET() {
       courses: '/api/courses',
       users: '/api/users',
       progress: '/api/progress',
+      lessonGenerator: '/api/generate-lesson',
+      homeworkGenerator: '/api/generate-homework',
+      commentGenerator: '/api/generate-comment',
+      analysis: '/api/analyze-student',
+      activityGenerator: '/api/generate-activity',
     },
   });
 }

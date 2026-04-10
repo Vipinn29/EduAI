@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: 'Modern educational platform',
 };
 
+import { SessionProvider } from "next-auth/react";
+
 export default function RootLayout({
   children,
 }: {
@@ -18,7 +20,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="bg-gray-50">
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );

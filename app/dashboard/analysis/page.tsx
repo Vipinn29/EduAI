@@ -6,7 +6,11 @@ import Button from '@/components/Button';
 import Skeleton from '@/components/Skeleton';
 import Toast from '@/components/Toast';
 
+import { useSession } from 'next-auth/react';
+
 export default function StudentAnalysis() {
+  const { data: session, status } = useSession();
+  const isAuthenticated = !!session;
   const [maths, setMaths] = useState('');
   const recRef = useRef<HTMLDivElement | null>(null);
   const [science, setScience] = useState('');
@@ -121,7 +125,7 @@ export default function StudentAnalysis() {
           variant="primary"
           className="w-full md:w-auto"
           disabled={
-            loading || maths === '' || science === '' || english === ''
+            loading || maths === '' || science === '' || english === '' || status === 'loading' || !isAuthenticated
           }
         >
           {loading ? 'Analyzing...' : 'Submit'}

@@ -1,6 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
+import { headers } from 'next/headers';
+import { prisma } from '@/lib/prisma';
+import { getToken } from "next-auth/jwt";
+import { authConfig } from "@/lib/auth";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     let { classLevel, subject, chapter, duration } = body;
@@ -98,7 +102,83 @@ Focus on engagement, examples, and learning outcomes.`,
       output = data;
     }
 
-    return NextResponse.json({ lesson: output });
+    // Validate generated content
+    if (output.length > 10000) {
+      console.error('Generated content too long:', output.length);
+      return NextResponse.json({ error: 'Generated lesson too long (max 10k chars)' }, { status: 413 });
+    }
+    if (!output.trim()) {
+      console.error('Generated empty lesson');
+      return NextResponse.json({ error: 'Generated empty lesson' }, { status: 500 });
+    }
+
+    let saved = false;
+    let savedLesson = null;
+    const headersList = request.headers;
+    const cookieHeader = headersList.get('cookie') || '';
+    console.log('Cookie header length:', cookieHeader.length > 0);
+    const token = await getToken({ 
+      req: {
+        headers: {
+          cookie: cookieHeader,
+        },
+      } as any, 
+      secret: process.env.NEXTAUTH_SECRET,
+    });
+    console.log('Token:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');
+    const userId = token?.id as string || token?.sub as string;
+    if (userId) {
+      try {
+        const title = `Class ${classLevel} ${subject} - ${chapter}`;
+        const metadata = {
+          title,
+          classLevel,
+          subject,
+          chapter,
+          duration,
+        };
+        savedLesson = await prisma.lesson.create({
+          data: {
+            content: output,
+            metadata,
+            userId,
+          },
+        });
+        await prisma.user.update({
+          where: { id: userId },
+          data: { lessonCount: { increment: 1 } },
+        });
+        saved = true;
+        console.log('Lesson saved for user:', userId, savedLesson.id);
+      } catch (saveErr: any) {
+        console.error('Prisma save failed for user', userId, {
+          message: saveErr.message,
+          code: saveErr.code,
+          meta: saveErr.meta,
+        });
+      }
+    }
+
+    // Always increment global lessons counter
+    const globalCounter = await prisma.globalCounter.upsert({
+      where: { id: "global_lessons" },
+      update: { 
+        count: { 
+          increment: 1 
+        } 
+      },
+      create: { 
+        id: "global_lessons", 
+        count: 1 
+      },
+    });
+
+    return NextResponse.json({ 
+      lesson: output,
+      globalLessons: globalCounter.count,
+      saved,
+      savedLesson 
+    });
   } catch (err: any) {
     // log full error for debugging; some fetch failures come with little
     // message text, so we also include `err.name` and stack if available.

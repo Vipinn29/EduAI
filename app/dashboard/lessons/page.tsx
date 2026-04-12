@@ -7,13 +7,14 @@ import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Skeleton from '@/components/Skeleton';
 import Toast from '@/components/Toast';
+import SavePDFButton from '@/components/SavePDFButton';
+import { useAuthCheck } from '@/lib/hooks/useAuth';
 
 const classes = Array.from({ length: 12 }, (_, i) => i + 1);
 const durations = ['15 min', '30 min', '45 min', '60 min'];
 
 export default function LessonGenerator() {
-  const { data: session, status } = useSession();
-  const isAuthenticated = !!session;
+  const { requireAuth } = useAuthCheck();
   const [classLevel, setClassLevel] = useState<number | ''>('');
   const resultRef = useRef<HTMLDivElement | null>(null);
   const [subject, setSubject] = useState('');
@@ -32,100 +33,90 @@ export default function LessonGenerator() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ classLevel, subject, chapter, duration }),
       });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Failed to generate');
-      }
+      if (!res.ok) throw new Error('Failed to generate');
       const data = await res.json();
       setResult(data.lesson);
+      if (data.saved) {
+        setToast('✅ Lesson saved to your dashboard!');
+        // Optional: refresh dashboard lessons list
+        window.dispatchEvent(new CustomEvent('lessonsRefresh'));
+      } else {
+        setToast('⚠️ Lesson generated but not saved (login required)');
+      }
     } catch (e: any) {
       setResult(`Error: ${e.message}`);
+      setToast('Generation failed');
     } finally {
       setLoading(false);
     }
   }
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setToast('Copied!');
-      setTimeout(() => setToast(null), 2000);
-    } catch {
-      setToast('Copy failed');
-    }
+  // Legacy handleSave removed - SavePDFButton handles everything
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setToast('Copied!');
+    setTimeout(() => setToast(null), 2000);
   };
 
   useEffect(() => {
-    if (result && resultRef.current) {
-      resultRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (result && resultRef.current) resultRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [result]);
-
-  if (status === 'loading') return <div>Loading...</div>;
-  if (!isAuthenticated) {
-    return (
-      <div className="text-center py-12">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Login to generate and save lessons</h3>
-        <Link href="/auth/login">
-          <Button variant="primary" className="text-lg">Login to Get Started</Button>
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-semibold text-gray-900">Lesson Generator</h2>
+      <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        AI Lesson Generator
+      </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-white rounded-xl shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-8 bg-gradient-to-br from-slate-50 to-blue-50 rounded-3xl shadow-2xl">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Class</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-3">Class</label>
           <select
             value={classLevel}
-            disabled={loading}
             onChange={(e) => setClassLevel(Number(e.target.value))}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={loading}
+            className="w-full p-4 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all"
           >
-            <option value="">Select class</option>
-            {classes.map((c) => (
-              <option key={c} value={c}>Class {c}</option>
-            ))}
+            <option value="">Select class...</option>
+            {classes.map((c) => <option key={c} value={c}>Class {c}</option>)}
           </select>
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-3">Subject</label>
           <input
             type="text"
             value={subject}
-            disabled={loading}
             onChange={(e) => setSubject(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Mathematics"
+            disabled={loading}
+            className="w-full p-4 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all"
+            placeholder="Mathematics, Science, etc."
           />
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Chapter</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-3">Chapter/Topic</label>
           <input
             type="text"
             value={chapter}
-            disabled={loading}
             onChange={(e) => setChapter(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Linear Equations"
+            disabled={loading}
+            className="w-full p-4 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all"
+            placeholder="Linear Equations in Two Variables"
           />
         </div>
+
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-3">Duration</label>
           <select
             value={duration}
-            disabled={loading}
             onChange={(e) => setDuration(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={loading}
+            className="w-full p-4 border border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all"
           >
-            <option value="">Select duration</option>
-            {durations.map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
+            <option value="">Select duration...</option>
+            {durations.map((d) => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
       </div>
@@ -135,52 +126,43 @@ export default function LessonGenerator() {
         variant="primary"
         size="lg"
         disabled={loading || !classLevel || !subject || !chapter || !duration}
-        className="w-full max-w-md mx-auto block"
+        className="w-full max-w-2xl mx-auto block shadow-2xl hover:shadow-3xl transform hover:-translate-y-1 transition-all"
       >
-        {loading ? 'Generating Lesson Plan...' : 'Generate Complete Lesson'}
+        {loading ? (
+          <>
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Generating Lesson Plan...
+          </>
+        ) : (
+          'Generate Complete Lesson Plan'
+        )}
       </Button>
 
       {loading && (
-        <div className="flex justify-center py-12">
-          <Skeleton className="h-96 w-full max-w-4xl" />
-        </div>
+        <Card className="animate-pulse">
+          <Skeleton className="h-96 w-full" />
+        </Card>
       )}
 
       {result && (
-        <div ref={resultRef} className="space-y-4">
-          <Card className="relative p-8">
-            <div className="flex justify-between items-start mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">Your Generated Lesson Plan</h3>
-              <Button
-                variant="secondary"
-                onClick={() => copyToClipboard(result)}
-              >
-                📋 Copy Full Plan
+        <div ref={resultRef}>
+          <Card className="group relative overflow-hidden shadow-2xl hover:shadow-3xl transition-all">
+            <div className="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+              <Button variant="secondary" size="sm" onClick={() => copyToClipboard(result)}>
+                Copy
               </Button>
+              <SavePDFButton 
+                content={result || ''}
+                metadata={{ classLevel, subject, chapter, duration }}
+                featureType="lesson"
+              />
             </div>
-            <Button
-              variant="primary"
-              className="w-full mb-6"
-              onClick={async () => {
-                try {
-                  await fetch('/api/save-lesson', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                      content: result, 
-                      classLevel, subject, chapter, duration 
-                    }),
-                  });
-                  setToast('✅ Lesson saved to your history!');
-                } catch (err) {
-                  setToast('Save failed');
-                }
-              }}
-            >
-              💾 Save to My Lessons History
-            </Button>
-            <div className="prose prose-lg max-w-none bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl border">
-              <pre className="whitespace-pre-wrap text-gray-800 leading-relaxed font-sans">
+            
+            <div className="p-8 prose prose-headings:text-gray-900 prose-p:text-gray-700 max-w-none">
+              <pre className="whitespace-pre-wrap bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-2xl border-2 border-dashed border-green-200">
                 {result}
               </pre>
             </div>
@@ -188,9 +170,7 @@ export default function LessonGenerator() {
         </div>
       )}
 
-      {toast && (
-        <Toast message={toast} />
-      )}
+      {toast && <Toast message={toast} />}
     </div>
   );
 }

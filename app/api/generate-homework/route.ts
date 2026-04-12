@@ -20,9 +20,9 @@ export async function POST(request: Request) {
     }
 
     const groqModel = 'llama-3.3-70b-versatile';
-    const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
+    const openaiUrl = 'https://api.openai.com/v1/chat/completions';
 
-    const res = await fetch(groqUrl, {
+    const res = await fetch(openaiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

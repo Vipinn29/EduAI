@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
-import TopNav from '@/components/TopNav';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -21,8 +20,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
 
         <div className="flex-1 min-h-screen flex flex-col">
-          <TopNav onOpenSidebar={() => setMobileOpen(true)} />
-
           <main className="flex-1 p-6 lg:p-8">
             <div className="max-w-7xl mx-auto animate-fade-in">{children}</div>
           </main>

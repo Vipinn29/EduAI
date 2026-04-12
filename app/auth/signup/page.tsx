@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import Button from '@/components/Button';
 import Link from 'next/link';
 
@@ -33,16 +34,16 @@ export default function Signup() {
       }
 
       // Auto sign in after signup
-      const signInResponse = await fetch('/api/auth/signin/credentials', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
       });
 
-      if (signInResponse.ok) {
-        router.push('/dashboard');
-      } else {
+      if (result?.error) {
         setError('Signup successful, but sign in failed');
+      } else {
+        router.push('/dashboard');
       }
     } catch (err) {
       setError('Something went wrong');

@@ -1,24 +1,13 @@
-# Auth Implementation TODO
+# OpenAI Migration TODO
 
-## Phase 1: Dependencies & Prisma (Current)
-- [x] Install npm dependencies (next-auth, prisma, bcryptjs, etc.)
-- [ ] npx prisma init && edit schema.prisma
-- [ ] npx prisma generate && db push
+## Steps to Complete:
 
-## Phase 2: Core Files ✓
-- [x] lib/auth.ts
-- [x] lib/prisma.ts
-- [x] [...nextauth]/route.ts
-- [x] signup/route.ts
+### 1. [x] Update app/api/generate-comment/route.ts
+### 2. [x] Update app/api/generate-activity/route.ts  
+### 3. [x] Update app/api/generate-lesson/route.ts
+### 4. [x] Update app/api/generate-homework/route.ts
+### 5. [x] Update app/api/analyze-student/route.ts
+### 6. [ ] Test APIs and restart dev server
+### 7. [ ] Mark complete
 
-## Phase 3: UI (Next)
-- [ ] Edit app/layout.tsx
-- [x] app/auth/login/page.tsx
-- [x] app/auth/signup/page.tsx
-
-## Phase 4: Protection
-- [ ] Add useSession checks to dashboard/lessons, analysis, etc.
-
-## Complete
-- [ ] Test login/signup/session
-- [ ] attempt_completion
+Track progress by editing this file after each step.

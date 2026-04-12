@@ -96,3 +96,36 @@ textarea:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
+
+/* PDF Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body * {
+    visibility: hidden;
+  }
+  
+  .printable-content, .printable-content * {
+    visibility: visible;
+  }
+  
+  .printable-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  
+  pre {
+    white-space: pre-wrap;
+    font-family: 'Inter', sans-serif;
+    font-size: 12pt;
+    line-height: 1.4;
+    background: white !important;
+    border: none !important;
+    padding: 0;
+    margin: 0;
+  }
+}

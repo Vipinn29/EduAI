@@ -3,6 +3,7 @@ interface CardProps {
   title?: string;
   description?: string;
   className?: string;
+  onClick?: () => void;
 }
 
 export default function Card({

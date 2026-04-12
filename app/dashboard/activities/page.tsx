@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import SavePDFButton from '@/components/SavePDFButton';
 import Skeleton from '@/components/Skeleton';
 import Toast from '@/components/Toast';
 
@@ -118,9 +119,14 @@ export default function ActivityGenerator() {
       )}
 
       {activity && (
-        <Card className="whitespace-pre-line relative animate-slide-in-up">
+        <Card className="group relative whitespace-pre-line animate-slide-in-up">
           <h3 className="text-lg font-semibold mb-2">Activity</h3>
-          <Button variant="secondary" onClick={() => copyToClipboard(activity)} className="absolute top-6 right-6">Copy</Button>
+          <Button variant="secondary" size="sm" onClick={() => copyToClipboard(activity)} className="absolute top-6 right-6 opacity-0 group-hover:opacity-100">Copy</Button>
+          <SavePDFButton 
+            content={activity || ''}
+            metadata={{ classLevel, subject, topic }}
+            featureType="activity"
+          />
           <p className="text-gray-700">{activity}</p>
         </Card>
       )}

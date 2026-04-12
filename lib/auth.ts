@@ -4,7 +4,7 @@ import { prisma } from './prisma'
 import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const authConfig = {
   providers: [
     Credentials({
       credentials: {
@@ -31,7 +31,50 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: {
     signIn: '/auth/login',
   },
-  session: { strategy: 'jwt' },
+  session: { 
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    maxAge: 15 * 24 * 60 * 60, // 15 days
+    // Production secure settings
+    ...(process.env.NODE_ENV === 'production' && {
+      secure: true, // HTTPS only cookies
+    }),
+  },
+  cookies: {
+    // Production secure cookies
+    ...(process.env.NODE_ENV === 'production' && {
+      sessionToken: {
+        name: `__Secure-next-auth.session-token`,
+        options: {
+          httpOnly: true,
+          sameSite: 'lax',
+          path: '/',
+          secure: true,
+        },
+      },
+      callbackToken: {
+        name: `__Secure-next-auth.callback-token`,
+        options: {
+          httpOnly: true,
+          sameSite: 'lax',
+          path: '/',
+          secure: true,
+        },
+      },
+      jwt: {
+        name: `__Secure-next-auth.jwt`,
+        options: {
+          httpOnly: true,
+          sameSite: 'lax',
+          path: '/',
+          secure: true,
+        },
+      },
+    }),
+  },
+  trustHost: true,
   callbacks: {
     jwt({ token, user }) {
       if (user) {
@@ -40,10 +83,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
+      if (session.user && token.id) {
+        session.user.id = token.id
       }
       return session
     },
   },
-} as NextAuthConfig)
+} satisfies NextAuthConfig
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
+
+export { authConfig }
+

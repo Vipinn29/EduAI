@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import SavePDFButton from '@/components/SavePDFButton';
 import Skeleton from '@/components/Skeleton';
 import Toast from '@/components/Toast';
 
@@ -174,15 +175,22 @@ export default function HomeworkGenerator() {
             <h3 className="text-lg font-semibold mb-2">Worksheet</h3>
             <Button
               variant="secondary"
+size="sm"
               onClick={() => copyToClipboard(worksheet)}
               className="absolute top-6 right-6"
             >
               Copy
             </Button>
+            <SavePDFButton 
+              content={worksheet || ''}
+              metadata={{ classLevel, subject, topic, difficulty }}
+              featureType="homework"
+            />
             <p className="text-gray-700">{worksheet}</p>
           </Card>
         </div>
       )}
+
 
       {answers && (
         <div ref={resultRef}>
@@ -190,11 +198,17 @@ export default function HomeworkGenerator() {
             <h3 className="text-lg font-semibold mb-2">Answers</h3>
             <Button
               variant="secondary"
+              size="sm"
               onClick={() => copyToClipboard(answers)}
               className="absolute top-6 right-6"
             >
               Copy
             </Button>
+            <SavePDFButton 
+              content={answers || ''}
+              metadata={{ classLevel, subject, topic, difficulty }}
+              featureType="homework"
+            />
             <p className="text-gray-700">{answers}</p>
           </Card>
         </div>
@@ -202,8 +216,21 @@ export default function HomeworkGenerator() {
 
       {!worksheet && result && (
         <div ref={resultRef}>
-          <Card className="whitespace-pre-line animate-slide-in-up">
+          <Card className="group relative whitespace-pre-line animate-slide-in-up">
             <h3 className="text-lg font-semibold mb-2">Your Worksheet</h3>
+            <Button
+              variant="secondary" 
+              size="sm"
+              onClick={() => copyToClipboard(result)}
+              className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all"
+            >
+              Copy
+            </Button>
+            <SavePDFButton 
+              content={result || ''}
+              metadata={{ classLevel, subject, topic, difficulty }}
+              featureType="homework"
+            />
             <p className="text-gray-700">{result}</p>
           </Card>
         </div>

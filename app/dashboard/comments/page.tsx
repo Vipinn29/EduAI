@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
+import SavePDFButton from '@/components/SavePDFButton';
 import Skeleton from '@/components/Skeleton';
 import Toast from '@/components/Toast';
 
@@ -183,11 +184,17 @@ export default function CommentGenerator() {
             <h3 className="text-lg font-semibold mb-2">Report Comment</h3>
             <Button
               variant="secondary"
+              size="sm"
               onClick={() => copyToClipboard(comment)}
               className="absolute top-6 right-6"
             >
               Copy
             </Button>
+            <SavePDFButton 
+              content={comment || ''}
+              metadata={{ studentName, classLevel, performance, strengths, areas }}
+              featureType="comment"
+            />
             <p className="text-gray-700">{comment}</p>
           </Card>
         </div>

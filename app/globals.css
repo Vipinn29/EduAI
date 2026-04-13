@@ -99,7 +99,8 @@ textarea:focus {
 
 /* PDF Print Styles */
 @media print {
-  .no-print {
+  .no-print,
+  .pdf-ignore {
     display: none !important;
   }
   
@@ -107,15 +108,23 @@ textarea:focus {
     visibility: hidden;
   }
   
-  .printable-content, .printable-content * {
+  #pdf-content.printable-content,
+  #pdf-content.printable-content * {
     visibility: visible;
   }
   
-  .printable-content {
+  #pdf-content.printable-content {
     position: absolute;
     left: 0;
     top: 0;
     width: 100%;
+  }
+  
+  .printable-content,
+  #pdf-content {
+    box-shadow: none;
+    background: white !important;
+    border: none !important;
   }
   
   pre {

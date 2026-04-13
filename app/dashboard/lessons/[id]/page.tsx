@@ -73,9 +73,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
-      <div className="max-w-4xl mx-auto px-4">
+      <div id="pdf-content printable-content" className="max-w-4xl mx-auto px-4">
         {/* Back Button */}
-        <a href="/dashboard" className="inline-flex items-center mb-8 text-emerald-600 hover:text-emerald-700 font-semibold transition-colors">
+        <a href="/dashboard" className="pdf-ignore inline-flex items-center mb-8 text-emerald-600 hover:text-emerald-700 font-semibold transition-colors">
           ← Back to Dashboard
         </a>
 
@@ -94,14 +94,15 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 <span>📅 {new Date(lesson.createdAt).toLocaleDateString('en-IN')}</span>
               </div>
             </div>
-            <div className="flex gap-3 mt-4 lg:mt-0">
-              <SavePDFButton 
-                content={lesson.content}
-                metadata={metadata}
-                featureType="lesson"
-              />
-              <PrintButton />
-            </div>
+        <div className="flex gap-3 mt-4 lg:mt-0">
+          <SavePDFButton 
+            className="pdf-ignore"
+            content={lesson.content}
+            metadata={metadata}
+            featureType="lesson"
+          />
+          <PrintButton className="no-print pdf-ignore" />
+        </div>
           </div>
         </div>
 

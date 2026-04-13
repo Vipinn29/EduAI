@@ -1,18 +1,30 @@
 "use client";
 
 import React from 'react';
+import Button from './Button';
 
-export default function PrintButton() {
+interface PrintButtonProps {
+  className?: string;
+  disabled?: boolean;
+}
+
+export default function PrintButton({ 
+  className = '', 
+  disabled = false 
+}: PrintButtonProps) {
   const handlePrint = () => {
     window.print();
   };
 
   return (
-    <button
+    <Button
       onClick={handlePrint}
-      className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-2xl hover:bg-blue-600 transition-all shadow-lg hover:shadow-xl"
+      variant="secondary"
+      size="sm"
+      disabled={disabled}
+      className={className}
     >
       🖨️ Print
-    </button>
+    </Button>
   );
 }

@@ -95,7 +95,8 @@ export default function Home() {
       </main>
 
       <footer className="bg-gray-900 text-gray-300 py-8 text-center">
-        <p>&copy; 2026 EduAI. Empowering teachers with AI.</p>
+        <p>&copy; 2026 EduAI. All rights reserved.</p>
+        <p className="text-sm opacity-80 mt-2">Made with ❤️ by Vipin Gupta</p>
       </footer>
     </>
   );

@@ -20,9 +20,9 @@ export async function POST(request: Request) {
     }
 
     const groqModel = 'llama-3.3-70b-versatile';
-    const openaiUrl = 'https://api.openai.com/v1/chat/completions';
+    const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
-    const res = await fetch(openaiUrl, {
+    const res = await fetch(groqUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,10 @@ Include:
 - 2 application-based questions
 
 \nKeep questions curriculum aligned and age appropriate.
-Provide answers separately at the end.`,
+Provide answers separately at the end.\n
+Rules:\n
+- No markdown symbols (#, *, -)\n
+- Use lists or bullet points where appropriate\n`,
           },
           { role: 'user', content: userPrompt },
         ],

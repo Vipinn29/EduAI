@@ -38,7 +38,10 @@ Write:
 - Positive and constructive comment
 - Professional tone
 - 3–4 lines
-- Encouraging but honest`,
+- Encouraging but honest\n
+Rules:\n
+- No markdown symbols (#, *, -)\n
+- Use lists or bullet points where appropriate\n`,
           },
           { role: 'user', content: userPrompt },
         ],

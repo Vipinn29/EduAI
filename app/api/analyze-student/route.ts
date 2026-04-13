@@ -68,7 +68,10 @@ export async function POST(request: Request) {
           messages: [
             {
               role: 'system',
-              content: `You are an experienced Indian school teacher following CBSE and NEP 2020 guidelines.\n\nProvide a JSON output with weakSubjects and recommendations based solely on the marks provided.`,
+              content: `You are an experienced Indian school teacher following CBSE and NEP 2020 guidelines.\n\nProvide a JSON output with weakSubjects and recommendations based solely on the marks provided.\n
+              Rules:\n
+- No markdown symbols (#, *, -)\n
+- Use lists or bullet points where appropriate\n`,
             },
             { role: 'user', content: prompt },
           ],

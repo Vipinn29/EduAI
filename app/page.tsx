@@ -45,7 +45,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="max-w-md mx-auto px-6 py-8">
+        <section className="max-w-md mx-auto px-6 py-2">
           <div className="group">
             <div className="transition-all duration-300 ease-out hover:scale-105">
               <Card className="bg-gradient-to-br from-blue-500 to-blue-600 p-0 overflow-hidden hover:shadow-xl text-white">

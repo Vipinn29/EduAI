@@ -116,7 +116,7 @@ Focus on engagement, examples, and learning outcomes.`,
     let savedLesson = null;
     const headersList = request.headers;
     const cookieHeader = headersList.get('cookie') || '';
-    console.log('Cookie header length:', cookieHeader.length > 0);
+    // console.log('Cookie header length:', cookieHeader.length > 0);
     const token = await getToken({ 
       req: {
         headers: {

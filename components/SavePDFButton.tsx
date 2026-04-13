@@ -1,46 +1,65 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Button from './Button';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 interface SavePDFButtonProps {
   content: string;
+  ref?: React.RefObject<HTMLElement>;
   metadata?: Record<string, any>;
-  featureType: 'lesson';
+  featureType?: string;
   className?: string;
 }
 
 export default function SavePDFButton({ 
   content, 
+  ref,
   metadata, 
-  featureType, 
+  featureType = 'lesson',
   className = '' 
 }: SavePDFButtonProps) {
   const [saving, setSaving] = useState(false);
 
-  const handleSavePDF = async () => {
+  const handleSavePDF = useCallback(async () => {
     if (!content) return;
 
     setSaving(true);
     
     try {
-      const pdfContent = document.getElementById('pdf-content') as HTMLElement;
+      // Prefer passed ref, fallback to global ID
+      let pdfContent = ref?.current || document.getElementById('pdf-content') as HTMLElement;
+      
       if (!pdfContent) {
-        throw new Error('PDF content not found');
+        // Fallback: simple text PDF from content prop
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const title = metadata?.title?.replace(/[^a-z0-9]/gi, '_')?.substring(0, 50) || 'EduAI_Doc';
+        const date = new Date().toISOString().split('T')[0];
+        const splitContent = pdf.splitTextToSize(content, 180);
+        pdf.text(splitContent, 10, 10);
+        pdf.save(`${title}_${featureType}_${date}.pdf`);
+        setSaving(false);
+        return;
       }
 
+      // Wait for fonts/images
+      await document.fonts.ready;
+      
       const ignoreElements = document.querySelectorAll('.pdf-ignore');
       ignoreElements.forEach((el) => (el as HTMLElement).style.visibility = 'hidden');
 
+      pdfContent.scrollTop = 0;
+
       const canvas = await html2canvas(pdfContent, {
-        scale: 3,
+        scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
         width: pdfContent.scrollWidth,
         height: pdfContent.scrollHeight,
+        windowWidth: pdfContent.scrollWidth,
+        windowHeight: pdfContent.scrollHeight,
       });
 
       ignoreElements.forEach((el) => (el as HTMLElement).style.visibility = '');
@@ -62,17 +81,18 @@ export default function SavePDFButton({
         heightLeft -= pageHeight;
       }
 
-      const title = metadata?.title?.replace(/[^a-z0-9]/gi, '_')?.substring(0, 50) || 'EduAI_Lesson';
+      const title = metadata?.title?.replace(/[^a-z0-9]/gi, '_')?.substring(0, 50) || 'EduAI_Doc';
       const date = new Date().toISOString().split('T')[0];
-      pdf.save(title + '_lesson_' + date + '.pdf');
+      pdf.save(`${title}_${featureType}_${date}.pdf`);
 
     } catch (error: any) {
       console.error('PDF generation failed:', error);
-      alert('PDF Error: ' + (error.message || 'Unknown') + '. Copy content manually.');
+      alert(`PDF Error: ${error.message || 'Unknown'}. Content copied to clipboard as fallback.`);
+      navigator.clipboard.writeText(content);
     } finally {
       setSaving(false);
     }
-  };
+  }, [ref, content, metadata, featureType]);
 
   return (
     <Button
@@ -82,8 +102,7 @@ export default function SavePDFButton({
       disabled={saving || !content}
       className={className}
     >
-      {saving ? 'Generating PDF...' : 'Save as PDF'}
+      {saving ? 'Generating...' : 'Save PDF'}
     </Button>
   );
 }
-

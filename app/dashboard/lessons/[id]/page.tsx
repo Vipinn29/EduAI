@@ -73,7 +73,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-12">
-      <div id="pdf-content printable-content" className="max-w-4xl mx-auto px-4">
+      <div id="pdf-content" className="printable-content max-w-4xl mx-auto px-4">
         {/* Back Button */}
         <a href="/dashboard" className="pdf-ignore inline-flex items-center mb-8 text-emerald-600 hover:text-emerald-700 font-semibold transition-colors">
           ← Back to Dashboard

@@ -37,32 +37,73 @@ export default function Home() {
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
               Create lessons, homework, activities, and student feedback in minutes using AI powered by CBSE and NEP 2020 guidelines.
             </p>
-            <Link href="/dashboard">
-              <Button variant="primary" className="px-8 py-3 text-lg">
-                Enter Dashboard
-              </Button>
-            </Link>
+             <div className="flex justify-center gap-4 flex-wrap">
+      <Link href="/dashboard">
+        <Button className="px-8 py-3 text-lg shadow-lg hover:scale-105 transition">
+          Get Started →
+        </Button>
+      </Link>
+
+      <Link href="/dashboard">
+        <Button variant="secondary" className="px-8 py-3 text-lg">
+          Explore Tools
+        </Button>
+      </Link>
+    </div>
           </div>
         </section>
 
-        <section className="max-w-md mx-auto px-6 py-2">
-          <div className="group">
-            <div className="transition-all duration-300 ease-out hover:scale-105">
-              <Card className="bg-gradient-to-br from-blue-500 to-blue-600 p-0 overflow-hidden hover:shadow-xl text-white">
-                <div className="relative p-8 flex flex-col items-center text-center">
-                  <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">📊</div>
-                  <h3 className="text-2xl font-bold mb-4">Lessons Generated</h3>
-                  <div className="text-5xl font-bold mb-2">{loading ? '...' : totalLessons}+</div>
-                  <p className="text-sm opacity-90">Total across platform</p>
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-10 bg-white pointer-events-none transition-opacity duration-300" />
-                </div>
-              </Card>
-            </div>
-          </div>
-        </section>
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-12 mt-12">
+  <div className="max-w-6xl mx-auto">
+
+    {/* Heading */}
+    <div className="text-center mb-10">
+      <h2 className="text-3xl font-bold text-white mb-2">
+        Built for Modern Educators
+      </h2>
+      <p className="text-blue-100 text-lg">
+        AI-powered tools trusted by teachers across India
+      </p>
+    </div>
+
+    {/* Stats Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+
+      {/* Lessons */}
+      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-lg hover:scale-105 transition">
+        <div className="text-4xl mb-2">📊</div>
+        <p className="text-3xl font-bold text-white">{loading ? "..." : `${totalLessons}+`}</p>
+        <p className="text-blue-100 mt-1">Lessons Generated</p>
+      </div>
+
+      {/* Speed */}
+      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-lg hover:scale-105 transition">
+        <div className="text-4xl mb-2">⚡</div>
+        <p className="text-3xl font-bold text-white">&lt; 5 sec</p>
+        <p className="text-blue-100 mt-1">Response Time</p>
+      </div>
+
+      {/* Trust */}
+      <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-lg hover:scale-105 transition">
+        <div className="text-4xl mb-2">🎓</div>
+        <p className="text-3xl font-bold text-white">100+</p>
+        <p className="text-blue-100 mt-1">Teachers Trust EduAI</p>
+      </div>
+
+    </div>
+
+    {/* Bottom trust line */}
+    <div className="text-center mt-10">
+      <p className="text-blue-100 text-sm">
+        Designed for Indian classrooms • CBSE • State Boards • Smart Teaching
+      </p>
+    </div>
+
+  </div>
+</div>
 
         <section className="max-w-5xl mx-auto px-6 py-16">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">5 Essential Tools for Teachers</h2>
+          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Everything a Teacher Needs</h2>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {[
               { emoji: '📚', name: 'Lessons' },
@@ -78,6 +119,15 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        {/* SOCIAL PROOF */}
+  <section className="max-w-4xl mx-auto px-6 py-8 text-center">
+    <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">Loved by Teachers</h2>
+    <p className="text-black-600 text-lg">
+      “EduAI saved me hours every week. Lesson planning is now effortless.”
+    </p>
+    <p className="mt-4 text-sm text-black-500">— School Teacher, India</p>
+  </section>
 
         <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 mt-12">
           <div className="max-w-4xl mx-auto px-6 text-center">

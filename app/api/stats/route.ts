@@ -3,41 +3,32 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
-    // Always ensure row exists
-    const globalCounter = await prisma.globalCounter.upsert({
+    // Global stats always available
+    const globalCounter = await prisma.globalCounter.findUnique({
       where: { id: "global_lessons" },
-      update: {},
-      create: {
-        id: "global_lessons",
-        count: 0,
-      },
-    });
+    }) ?? { count: 0 };
 
-    // Auth check (optional)
+    // Check auth cookie for user stats
     const headersList = request.headers;
-    const hasAuthCookie =
-      headersList.has("__Secure-next-auth.session-token") ||
-      headersList.has("next-auth.session-token");
-
+    const hasAuthCookie = headersList.has('__Secure-next-auth.session-token') || headersList.has('next-auth.session-token');
     let userLessons = 0;
 
     if (hasAuthCookie) {
-      userLessons = 42; // placeholder
+      // Demo count - replace with real user query
+      userLessons = 42;
     }
 
     return NextResponse.json({
       totalLessons: globalCounter.count,
       userLessons,
-      isAuthenticated: hasAuthCookie,
+      isAuthenticated: hasAuthCookie
     });
   } catch (error: any) {
     console.error("Stats API error:", error);
     return NextResponse.json(
-      {
-        error: error.message, // 👈 show real error
-        totalLessons: 0,
-      },
+      { error: error?.message, stack: error?.stack, },
       { status: 500 }
     );
   }
 }
+

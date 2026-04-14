@@ -5,3 +5,8 @@
     "no-console": "warn"
   }
 }
+{
+  "rules": {
+    "react/no-unescaped-entities": "off"
+  }
+}

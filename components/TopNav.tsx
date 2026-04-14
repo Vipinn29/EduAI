@@ -65,7 +65,7 @@ export default function TopNav({ onOpenSidebar }: { onOpenSidebar?: () => void }
                     className="flex items-center gap-2 bg-white border border-gray-100 px-3 py-1 rounded-full hover:shadow-sm transition-all"
                   >
                     <Image 
-                      src={session.user?.image || "/avatar-placeholder.svg"} 
+                      src="/avatar-placeholder.svg"
                       alt="avatar" 
                       width={32} 
                       height={32} 

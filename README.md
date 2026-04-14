@@ -119,13 +119,13 @@ npm run dev
 
 ```mermaid
 graph TB
-    A[Next.js App Router] --> B[API Routes<br>/api/generate-*]
+    A[Next.js App Router] --> B["API Routes /api/generate-*"]
     B --> C[Prisma Client]
     C --> D[PostgreSQL]
     E[NextAuth] --> F[User Sessions]
-    G[Dashboard] --> H[PDF Export<br>jsPDF]
-    A -.->|Tailwind UI| I[Components]
-    J[AI Service<br>(OpenAI?)] -.->|Prompts| B
+    G[Dashboard] --> H["PDF Export jsPDF"]
+    A -.->|"Tailwind UI"| I[Components]
+    J["AI Service OpenAI"] -.->|"Prompts"| B
 ```
 
 ## 🗄 **Database Schema**

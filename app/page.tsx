@@ -13,7 +13,9 @@ export default function Home() {
     const fetchTotal = async () => {
       try {
         setLoading(true);
-        const res = await fetch('/api/stats');
+        const res = await fetch('/api/stats', {
+  credentials: 'include',
+});
         if (!res.ok) throw new Error('Failed');
         const data = await res.json();
         setTotalLessons(data.totalLessons || 0);

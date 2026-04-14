@@ -30,7 +30,7 @@ export default function LessonsHistory() {
     try {
       setLoading(true);
       setError('');
-      const res = await fetch('/api/user-lessons');
+      const res = await fetch('/api/user-lessons', {credentials: 'include',});
       if (!res.ok) throw new Error('Failed to fetch lessons');
       const data: UserLessonsData = await res.json();
       setLessonsData(data);

@@ -39,7 +39,9 @@ export default function Dashboard() {
       try {
         setLoadingStats(true);
         setError('');
-        const res = await fetch('/api/stats');
+        const res = await fetch('/api/stats', {
+  credentials: 'include',
+});
         if (!res.ok) throw new Error('Failed to fetch stats');
         const data = await res.json();
         setGlobalStats({ totalLessons: data.totalLessons || 0 });
@@ -58,7 +60,7 @@ export default function Dashboard() {
     try {
       setLoadingLessons(true);
       setError('');
-      const res = await fetch('/api/user-lessons');
+      const res = await fetch('/api/user-lessons', {credentials: 'include',});
       if (!res.ok) throw new Error('Failed to fetch lessons');
       const data: UserLessonsData = await res.json();
       setLessonsData(data);

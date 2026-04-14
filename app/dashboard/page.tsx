@@ -104,7 +104,7 @@ export default function Dashboard() {
   const notLoggedIn = !isLoggedIn;
 
   return (
-    <div className="space-y-12 py-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="space-y-12 py-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header - Always shown */}
       <div className="text-center mb-12">
         <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-3">
@@ -224,37 +224,55 @@ export default function Dashboard() {
                 </Link>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {lessonsData.lessons.map((lesson) => (
-                  <Card key={lesson.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full border-gray-200 overflow-hidden">
-                    <div className="p-6 h-full flex flex-col">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full">
-                          Lesson
-                        </span>
-                        <span className="text-sm text-gray-500">{lesson.date}</span>
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-emerald-600 transition-colors">
-                        {lesson.title}
-                      </h3>
-                      <p className="text-gray-600 mb-6 flex-1 line-clamp-3 leading-relaxed">
-                        {lesson.preview}
-                      </p>
-                      <div className="mt-auto border-t pt-4">
-                        <Link
-                          href={`/dashboard/lessons/${lesson.id}`}
-                          className="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-semibold text-sm transition-colors"
-                        >
-                          View Lesson
-                          <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </Link>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+              <>
+                <div className="max-h-[28rem] overflow-y-auto rounded-2xl shadow-sm border border-gray-200 bg-white/50 backdrop-blur-sm scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 pb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 px-4 pt-4">
+{lessonsData.lessons.slice(0, 3).map((lesson) => (
+                      <Card key={lesson.id} className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-1 h-full border-gray-200 overflow-hidden">
+                        <div className="p-6 h-full flex flex-col">
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full">
+                              Lesson
+                            </span>
+                            <span className="text-sm text-gray-500">{lesson.date}</span>
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-emerald-600 transition-colors">
+                            {lesson.title}
+                          </h3>
+                          <p className="text-gray-600 mb-6 flex-1 line-clamp-3 leading-relaxed">
+                            {lesson.preview}
+                          </p>
+                          <div className="mt-auto border-t pt-4">
+                            <Link
+                              href={`/dashboard/lessons/${lesson.id}`}
+                              className="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-semibold text-sm transition-colors"
+                            >
+                              View Lesson
+                              <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </Link>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+                {lessonsData.lessons.length > 3 && (
+                  <div className="mt-4 text-center p-4 bg-gray-50 rounded-xl">
+                    <p className="text-sm text-gray-600 mb-2">Showing last 3 of {lessonsData.totalCount} lessons</p>
+                    <Link 
+                    href="/dashboard/lessons/history" 
+                    className="inline-flex items-center px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-semibold text-sm rounded-lg transition-all border border-emerald-200 hover:border-emerald-300"
+                  >
+                    View All Lessons 
+                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </Link>
+                  </div>
+                )}
+              </>
             )}
           </section>
         </>

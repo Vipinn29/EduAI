@@ -34,7 +34,7 @@ export async function POST(request: Request) {
             role: 'system',
             content: `You are an innovative classroom activity designer. Respond in simple language. Provide one short interactive classroom activity that:\n- requires minimal materials\n- involves student participation\n- takes under 10 minutes\n- improves concept understanding\nFormat the response with clear headings such as Activity Title, Materials, Time, Procedure, Learning Outcome.\n
             Rules:\n
-- No markdown symbols (#, *, -)\n
+- No markdown symbols (#, *)\n
 - Use lists or bullet points where appropriate\n`,
           },
           { role: 'user', content: userPrompt },

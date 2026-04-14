@@ -44,7 +44,7 @@ Include:
 \nKeep questions curriculum aligned and age appropriate.
 Provide answers separately at the end.\n
 Rules:\n
-- No markdown symbols (#, *, -)\n
+- No markdown symbols (#, *)\n
 - Use lists or bullet points where appropriate\n`,
           },
           { role: 'user', content: userPrompt },

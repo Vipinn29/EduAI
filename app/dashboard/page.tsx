@@ -291,7 +291,7 @@ export default function Dashboard() {
           ].map((feature) => (
             <Link key={feature.id} href={feature.href} className="group">
               <Card className={`h-full bg-gradient-to-br ${feature.color} text-white p-0 overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]`}>
-                <div className="relative h-full flex flex-col p-8">
+                <div className="relative h-full flex flex-col p-8 text-center items-center">
                   <div className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-500">{feature.icon}</div>
                   <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
                   <p className="text-white/90 text-lg mb-8 flex-1">{feature.description}</p>

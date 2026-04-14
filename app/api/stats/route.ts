@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { getToken } from "next-auth/jwt";
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    // ✅ Ensure global counter exists
+    // ✅ Always safe global counter
     const globalCounter = await prisma.globalCounter.upsert({
       where: { id: "global_lessons" },
       update: {},
@@ -14,34 +14,43 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // ✅ Correct session (v5)
-    const session = await auth();
+    // ✅ Safe session extraction (no crash)
+    const token = await getToken({
+      req,
+      secret: process.env.NEXTAUTH_SECRET,
+    });
 
     let userLessons = 0;
 
-    if (session?.user?.email) {
-      const user = await prisma.user.findUnique({
-        where: { email: session.user.email },
-        include: {
-          _count: {
-            select: { lessons: true },
+    try {
+      if (token?.email) {
+        const user = await prisma.user.findUnique({
+          where: { email: token.email as string },
+          select: {
+            _count: {
+              select: { lessons: true },
+            },
           },
-        },
-      });
+        });
 
-      userLessons = user?._count?.lessons || 0;
+        userLessons = user?._count?.lessons || 0;
+      }
+    } catch (err) {
+      console.error("USER STATS ERROR:", err);
     }
 
     return NextResponse.json({
       totalLessons: globalCounter.count,
       userLessons,
-      isAuthenticated: !!session,
+      isAuthenticated: !!token,
     });
   } catch (error: any) {
     console.error("Stats API error:", error);
 
     return NextResponse.json(
-      { error: error?.message || "Internal server error" },
+      {
+        error: error?.message || "Internal server error",
+      },
       { status: 500 }
     );
   }

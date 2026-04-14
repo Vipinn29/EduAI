@@ -77,14 +77,14 @@ const authConfig = {
   trustHost: true,
   callbacks: {
     jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
+      if (user && user.id) {
+        token.id = user.id as string
       }
       return token
     },
     session({ session, token }) {
       if (session.user && token.id) {
-        session.user.id = token.id
+        session.user.id = token.id as string
       }
       return session
     },

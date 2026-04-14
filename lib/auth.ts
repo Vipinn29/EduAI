@@ -79,12 +79,14 @@ const authConfig = {
     jwt({ token, user }) {
       if (user && user.id) {
         token.id = user.id as string
+        token.name = user.name || ""
       }
       return token
     },
     session({ session, token }) {
       if (session.user && token.id) {
-        session.user.id = token.id as string
+        session.user.id = token.id
+        session.user.name = token.name
       }
       return session
     },

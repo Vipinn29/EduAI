@@ -56,7 +56,7 @@ export default function Dashboard() {
   }, []);
 
   const fetchLessons = useCallback(async () => {
-    if (status === 'loading' || !session) return;
+    if (status !== 'authenticated') return;
     try {
       setLoadingLessons(true);
       setError('');
@@ -74,20 +74,6 @@ export default function Dashboard() {
   useEffect(() => {
     fetchLessons();
   }, [status, session, refreshTrigger, fetchLessons]);
-
-  // Polling for new lessons every 30s when logged in
-  // const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  // useEffect(() => {
-  //   if (isLoggedIn && fetchLessons) {
-  //     pollIntervalRef.current = setInterval(fetchLessons, 30000);
-  //   }
-  //   return () => {
-  //     if (pollIntervalRef.current) {
-  //       clearInterval(pollIntervalRef.current);
-  //     }
-  //   };
-  // }, [isLoggedIn, fetchLessons]);
 
   if (status === "loading") {
     return (

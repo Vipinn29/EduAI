@@ -20,7 +20,10 @@ const authConfig = {
 
         if (!user || !user.hashedPassword) return null
 
-        const isValid = await bcrypt.compare(credentials.password as string, user.hashedPassword)
+        const isValid = await bcrypt.compare(
+          credentials.password as string,
+          user.hashedPassword
+        )
 
         if (!isValid) return null
 
@@ -28,65 +31,30 @@ const authConfig = {
       },
     }),
   ],
+
   pages: {
     signIn: '/auth/login',
   },
-  session: { 
+
+  session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  jwt: {
-    maxAge: 15 * 24 * 60 * 60, // 15 days
-    // Production secure settings
-    ...(process.env.NODE_ENV === 'production' && {
-      secure: true, // HTTPS only cookies
-    }),
-  },
-  cookies: {
-    // Production secure cookies
-    ...(process.env.NODE_ENV === 'production' && {
-      sessionToken: {
-        name: `__Secure-next-auth.session-token`,
-        options: {
-          httpOnly: true,
-          sameSite: 'lax',
-          path: '/',
-          secure: true,
-        },
-      },
-      callbackToken: {
-        name: `__Secure-next-auth.callback-token`,
-        options: {
-          httpOnly: true,
-          sameSite: 'lax',
-          path: '/',
-          secure: true,
-        },
-      },
-      jwt: {
-        name: `__Secure-next-auth.jwt`,
-        options: {
-          httpOnly: true,
-          sameSite: 'lax',
-          path: '/',
-          secure: true,
-        },
-      },
-    }),
-  },
+
   trustHost: true,
+
   callbacks: {
     jwt({ token, user }) {
-      if (user && user.id) {
+      if (user?.id) {
         token.id = user.id as string
         token.name = user.name || ""
       }
       return token
     },
+
     session({ session, token }) {
       if (session.user && token.id) {
-        session.user.id = token.id
-        session.user.name = token.name
+        session.user.id = token.id as string
+        session.user.name = token.name as string
       }
       return session
     },
@@ -94,6 +62,4 @@ const authConfig = {
 } satisfies NextAuthConfig
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authConfig)
-
 export { authConfig }
-

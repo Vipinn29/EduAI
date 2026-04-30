@@ -23,6 +23,7 @@ export default function ActivityGenerator() {
     try {
       const res = await fetch('/api/generate-activity', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ classLevel, subject, topic }),
       });

@@ -30,6 +30,7 @@ export default function LessonGenerator() {
     try {
       const res = await fetch('/api/generate-lesson', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ classLevel, subject, chapter, duration }),
       });

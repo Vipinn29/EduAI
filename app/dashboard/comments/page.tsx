@@ -33,6 +33,7 @@ export default function CommentGenerator() {
     try {
       const res = await fetch('/api/generate-comment', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ studentName, classLevel, performance, strengths, areas }),
       });

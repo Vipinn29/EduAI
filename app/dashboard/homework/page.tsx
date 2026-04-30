@@ -36,6 +36,7 @@ export default function HomeworkGenerator() {
     try {
       const res = await fetch('/api/generate-homework', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ classLevel, subject, topic, difficulty }),
       });

@@ -37,6 +37,7 @@ export default function StudentAnalysis() {
     try {
       const res = await fetch('/api/analyze-student', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           maths: Number(maths),

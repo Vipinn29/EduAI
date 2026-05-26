@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getOpenAIClient, DEFAULT_MODEL, TEACHER_SYSTEM_MESSAGE } from '@/lib/openai';
 
 interface Marks {
   maths: number;
@@ -47,49 +48,24 @@ export async function POST(request: Request) {
     let weakSubjects: string[] = [];
     let recommendations = '';
 
-    const chatbotKey = process.env.EDU_CHATBOT_KEY || process.env.HUGGINGFACE_API_KEY;
-    if (!chatbotKey) {
-      // fall back to simple logic immediately
-      return NextResponse.json(simpleAnalysis({ maths, science, english }));
-    }
-
     try {
-      const prompt = `Given marks for Maths: ${maths}, Science: ${science}, English: ${english}, identify the weak subjects and provide brief recommendations. Respond in JSON with keys \"weakSubjects\" (array) and \"recommendations\" (string).`;
-      const groqModel = 'llama-3.3-70b-versatile';
-      const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
-      const res = await fetch(groqUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${chatbotKey}`,
-        },
-        body: JSON.stringify({
-          model: groqModel,
-          messages: [
-            {
-              role: 'system',
-              content: `You are an experienced Indian school teacher following CBSE and NEP 2020 guidelines.\n\nProvide a JSON output with weakSubjects and recommendations based solely on the marks provided.\n
-              Rules:\n
-- No markdown symbols (#, *)\n
-- Use lists or bullet points where appropriate\n`,
-            },
-            { role: 'user', content: prompt },
-          ],
-          max_tokens: 200,
-        }),
+      const client = getOpenAIClient();
+      const prompt = `Given marks for Maths: ${maths}, Science: ${science}, English: ${english}, identify the weak subjects and provide brief recommendations. Respond in JSON with keys "weakSubjects" (array) and "recommendations" (string).`;
+
+      const response = await client.chat.completions.create({
+        model: DEFAULT_MODEL,
+        messages: [
+          {
+            role: 'system',
+            content: `${TEACHER_SYSTEM_MESSAGE}\n\nProvide a JSON output with weakSubjects and recommendations based solely on the marks provided.`,
+          },
+          { role: 'user', content: prompt },
+        ],
+        max_tokens: 200,
       });
 
-      if (!res.ok) {
-        throw new Error(`AI service returned ${res.status}`);
-      }
+      const text = response.choices[0]?.message?.content || '';
 
-      const data = await res.json();
-      let text = '';
-      if (data?.choices?.[0]?.message?.content) {
-        text = data.choices[0].message.content;
-      } else if (typeof data === 'string') {
-        text = data;
-      }
       // try parse JSON
       try {
         const json = JSON.parse(text);
@@ -99,7 +75,6 @@ export async function POST(request: Request) {
         // fallback if JSON parse fails
         ({ weakSubjects, recommendations } = simpleAnalysis({ maths, science, english }));
       }
-
     } catch (aiErr) {
       console.error('analysis AI error', aiErr);
       ({ weakSubjects, recommendations } = simpleAnalysis({ maths, science, english }));

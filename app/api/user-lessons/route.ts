@@ -9,13 +9,12 @@ export async function GET(request: NextRequest) {
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });
+    console.log('[user-lessons] Token extracted:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');
     const userId = token?.id as string || token?.sub as string;
+    console.log('[user-lessons] UserId resolved:', userId || 'EMPTY');
 
     if (!userId) {
-      return NextResponse.json({ lessons: [], totalCount: 0 });
-    }
-
-    if (!userId) {
+      console.log('[user-lessons] ⚠️ No userId - returning empty lessons');
       return NextResponse.json({ lessons: [], totalCount: 0 });
     }
 
@@ -32,6 +31,7 @@ export async function GET(request: NextRequest) {
     });
 
     const totalCount = await prisma.lesson.count({ where: { userId } });
+    console.log('[user-lessons] ✓ Found', lessons.length, 'lessons for user', userId, 'Total count:', totalCount);
 
     // Format lessons
     const formattedLessons = lessons.map((lesson) => {
@@ -46,9 +46,11 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    console.log('[user-lessons] Returning formatted lessons:', formattedLessons.length);
     return NextResponse.json({ lessons: formattedLessons, totalCount });
   } catch (error: any) {
-    console.error("User lessons API error:", error);
+    console.error("[user-lessons] ✗ API error:", error);
+    console.error('[user-lessons] Returning error response');
     return NextResponse.json({ lessons: [], error: "Internal server error" }, { status: 500 });
   }
 }

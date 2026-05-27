@@ -48,9 +48,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
     } as any,
     secret: process.env.NEXTAUTH_SECRET,
   });
+  console.log('[lesson-detail] Token:', token ? { id: token.id, sub: token.sub } : 'null');
 
   const userId = token?.id as string || token?.sub as string;
+  console.log('[lesson-detail] UserId:', userId || 'EMPTY');
   if (!userId) {
+    console.log('[lesson-detail] No userId - returning notfound');
     notFound();
   }
   const lesson = await getLesson(params.id, userId);

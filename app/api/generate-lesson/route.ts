@@ -63,8 +63,9 @@ export async function POST(request: NextRequest) {
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });
-    console.log('Token:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');
+    console.log('[generate-lesson] Token extracted:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');
     const userId = token?.id as string || token?.sub as string;
+    console.log('[generate-lesson] UserId resolved:', userId || 'EMPTY');
     if (userId) {
       try {
         const title = `Class ${classLevel} ${subject} - ${chapter}`;
@@ -87,14 +88,16 @@ export async function POST(request: NextRequest) {
           data: { lessonCount: { increment: 1 } },
         });
         saved = true;
-        console.log('Lesson saved for user:', userId, savedLesson.id);
+        console.log('[generate-lesson] ✓ Lesson saved successfully for user:', userId, 'Lesson ID:', savedLesson.id);
       } catch (saveErr: any) {
-        console.error('Prisma save failed for user', userId, {
+        console.error('[generate-lesson] ✗ Prisma save failed for user', userId, {
           message: saveErr.message,
           code: saveErr.code,
           meta: saveErr.meta,
         });
       }
+    } else {
+      console.log('[generate-lesson] ⚠️ No userId extracted from token - lesson will not be saved');
     }
 
     // Always increment global lessons counter

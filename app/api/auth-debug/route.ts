@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
 export async function GET(request: NextRequest) {
+  const cookieHeader = request.headers.get('cookie') || '';
   const token = await getToken({
-    req: request,
+    req: {
+      headers: {
+        cookie: cookieHeader,
+      },
+    } as any,
     secret: process.env.NEXTAUTH_SECRET,
   })
 

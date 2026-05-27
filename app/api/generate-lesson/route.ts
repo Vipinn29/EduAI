@@ -59,11 +59,16 @@ export async function POST(request: NextRequest) {
 
     let saved = false;
     let savedLesson = null;
+    const cookieHeader = request.headers.get('cookie') || '';
     const token = await getToken({
-      req: request,
+      req: {
+        headers: {
+          cookie: cookieHeader,
+        },
+      } as any,
       secret: process.env.NEXTAUTH_SECRET,
     });
-    console.log('[generate-lesson] Token extracted:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');
+    console.log('[generate-lesson] cookie length:', cookieHeader.length, 'Token extracted:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');
     const userId = token?.id as string || token?.sub as string;
     console.log('[generate-lesson] UserId resolved:', userId || 'EMPTY');
     if (userId) {

@@ -121,9 +121,17 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Re-read to ensure the increment is visible in this request/context
+    const globalCounterAfter = await prisma.globalCounter.findUnique({
+      where: { id: "global_lessons" },
+      select: { count: true },
+    });
+
+    console.log('[generate-lesson] globalCounter before:', globalCounter.count, 'after:', globalCounterAfter?.count);
+
     return NextResponse.json({
       lesson: output,
-      globalLessons: globalCounter.count,
+      globalLessons: globalCounterAfter?.count ?? globalCounter.count,
       saved,
       savedLesson
     });

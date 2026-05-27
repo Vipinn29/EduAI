@@ -5,17 +5,13 @@ export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const globalCounter = await prisma.globalCounter.upsert({
+    const globalCounter = await prisma.globalCounter.findUnique({
       where: { id: "global_lessons" },
-      update: {},
-      create: {
-        id: "global_lessons",
-        count: 0,
-      },
+      select: { count: true },
     });
 
     return NextResponse.json({
-      totalLessons: globalCounter.count,
+      totalLessons: globalCounter?.count ?? 0,
     });
   } catch (error: any) {
     console.error("Stats API error:", error);

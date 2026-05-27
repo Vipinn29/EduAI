@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { headers } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import { getToken } from "next-auth/jwt";
-import { authConfig } from "@/lib/auth";
+
 import { getOpenAIClient, DEFAULT_MODEL, TEACHER_SYSTEM_MESSAGE } from '@/lib/openai';
 
 export async function POST(request: NextRequest) {
@@ -67,7 +67,9 @@ export async function POST(request: NextRequest) {
         },
       } as any,
       secret: process.env.NEXTAUTH_SECRET,
+      cookieName: '__Secure-authjs.session-token',
     });
+
     console.log('[generate-lesson] cookie length:', cookieHeader.length, 'Token extracted:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');
     const userId = token?.id as string || token?.sub as string;
     console.log('[generate-lesson] UserId resolved:', userId || 'EMPTY');

@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getToken } from "next-auth/jwt";
-import { authConfig } from "@/lib/auth";
+
 
 export async function GET(request: NextRequest) {
   try {
     const cookieHeader = request.headers.get('cookie') || '';
+    // Decode the NextAuth JWT from the request cookies.
+    // IMPORTANT: for Credentials+JWT strategy, `sub` is the user id by default.
+    // We also expose `token.id` via jwt() callback.
     const token = await getToken({
       req: {
         headers: {
@@ -13,10 +16,21 @@ export async function GET(request: NextRequest) {
         },
       } as any,
       secret: process.env.NEXTAUTH_SECRET,
+      // Explicitly specify the auth cookie name so we read the correct cookie in Vercel/serverless.
+      // NextAuth default is `next-auth.session-token` for App Router + JWT strategy.
+      // If your cookie name differs, adjust it here.
+      cookieName: '__Secure-authjs.session-token',
     });
-    console.log('[user-lessons] cookie length:', cookieHeader.length, 'Token extracted:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');
-    const userId = token?.id as string || token?.sub as string;
+
+
+
+    console.log('[user-lessons] cookie length:', cookieHeader.length);
+    console.log('[user-lessons] Token extracted:', token ? { id: token.id, sub: token.sub, email: token.email, iat: token.iat, exp: token.exp } : 'null');
+
+    // Prefer callback-added token.id, fallback to token.sub.
+    const userId = (token?.id as string | undefined) ?? (token?.sub as string | undefined);
     console.log('[user-lessons] UserId resolved:', userId || 'EMPTY');
+
 
     if (!userId) {
       console.log('[user-lessons] ⚠️ No userId - returning empty lessons');

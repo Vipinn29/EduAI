@@ -13,6 +13,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const [debugResult, setDebugResult] = useState<any>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -21,15 +23,17 @@ export default function Login() {
     const result = await signIn('credentials', {
       email,
       password,
-      redirect: false,
+      redirect: true,
+      callbackUrl: '/dashboard',
     });
+
+    console.log('signIn result:', result);
+    setDebugResult(result);
 
     if (result?.error) {
       setError('Invalid credentials');
-    } else {
-      router.push('/dashboard');
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -83,6 +87,12 @@ export default function Login() {
             {loading ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>
+        {debugResult && (
+          <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-800">
+            <p className="font-semibold mb-2">Debug result</p>
+            <pre className="whitespace-pre-wrap break-words">{JSON.stringify(debugResult, null, 2)}</pre>
+          </div>
+        )}
         <div className="text-center">
           <p className="text-sm text-gray-600">
             Don't have an account?{' '}

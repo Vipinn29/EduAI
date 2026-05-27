@@ -40,8 +40,7 @@ const authConfig = {
     strategy: 'jwt',
   },
 
-  trustHost: true,
-
+  trustHost: true,  debug: true,
   callbacks: {
     jwt({ token, user }) {
       if (user?.id) {

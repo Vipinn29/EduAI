@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import { getToken } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
 import SavePDFButton from '@/components/SavePDFButton';
 import PrintButton from '@/components/PrintButton';
@@ -34,26 +35,24 @@ interface Lesson {
 }
 
 export default async function LessonPage({ params }: LessonPageProps) {
-  // Get cookie header for NextAuth token (in cookie header, not authorization)
   const cookieHeader = headers().get('cookie') || '';
   if (!cookieHeader) {
     notFound();
   }
 
-  // Decode simple token or use existing API pattern (user-lessons works)
-  // For simplicity, fetch session via API (already working per logs)
-  const sessionRes = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/auth/session`, {
-    headers: {
-      cookie: cookieHeader
-    }
+  const token = await getToken({
+    req: {
+      headers: {
+        cookie: cookieHeader,
+      },
+    } as any,
+    secret: process.env.NEXTAUTH_SECRET,
   });
-  const session = await sessionRes.json();
-  
-  if (!session?.user?.id) {
+
+  const userId = token?.id as string || token?.sub as string;
+  if (!userId) {
     notFound();
   }
-  
-  const userId = session.user.id;
   const lesson = await getLesson(params.id, userId);
   
   if (!lesson) {

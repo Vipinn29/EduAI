@@ -5,19 +5,10 @@ import { authConfig } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
   try {
-    // Check auth cookie first
-    const headersList = request.headers;
-    const cookieHeader = headersList.get('cookie') || '';
-    // console.log('User-lessons cookie length:', cookieHeader.length);
-    const token = await getToken({ 
-      req: {
-        headers: {
-          cookie: cookieHeader,
-        },
-      } as any,
+    const token = await getToken({
+      req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });
-    // console.log('User-lessons token:', token ? { id: token.id, sub: token.sub } : 'null');
     const userId = token?.id as string || token?.sub as string;
 
     if (!userId) {

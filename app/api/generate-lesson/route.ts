@@ -59,15 +59,8 @@ export async function POST(request: NextRequest) {
 
     let saved = false;
     let savedLesson = null;
-    const headersList = request.headers;
-    const cookieHeader = headersList.get('cookie') || '';
-    // console.log('Cookie header length:', cookieHeader.length > 0);
     const token = await getToken({
-      req: {
-        headers: {
-          cookie: cookieHeader,
-        },
-      } as any,
+      req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });
     console.log('Token:', token ? { id: token.id, sub: token.sub, email: token.email } : 'null');

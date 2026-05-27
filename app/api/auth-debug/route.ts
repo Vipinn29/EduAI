@@ -18,7 +18,10 @@ export async function GET(request: NextRequest) {
   })
 
   const userId = token?.id as string || token?.sub as string
-  
+  const host = request.headers.get('host') || 'NONE';
+  const forwardedHost = request.headers.get('x-forwarded-host') || 'NONE';
+  const referer = request.headers.get('referer') || 'NONE';
+
   return NextResponse.json({
     token: token ? {
       id: token.id,
@@ -32,6 +35,10 @@ export async function GET(request: NextRequest) {
     userId: userId || 'NONE',
     cookiePresent: cookieHeader ? 'YES' : 'NO',
     authCookieNames,
+    host,
+    forwardedHost,
+    referer,
+    nextAuthUrl: process.env.NEXTAUTH_URL || 'NONE',
     hasSecret: !!process.env.NEXTAUTH_SECRET,
   })
 }

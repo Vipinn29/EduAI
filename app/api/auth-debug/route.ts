@@ -3,6 +3,11 @@ import { getToken } from 'next-auth/jwt'
 
 export async function GET(request: NextRequest) {
   const cookieHeader = request.headers.get('cookie') || '';
+  const cookieNames = cookieHeader
+    ? cookieHeader.split(';').map((cookie) => cookie.trim().split('=')[0])
+    : [];
+  const authCookieNames = cookieNames.filter((name) => name.includes('next-auth'));
+
   const token = await getToken({
     req: {
       headers: {
@@ -25,7 +30,8 @@ export async function GET(request: NextRequest) {
       jti: token.jti,
     } : null,
     userId: userId || 'NONE',
-    cookiePresent: request.headers.get('cookie') ? 'YES' : 'NO',
+    cookiePresent: cookieHeader ? 'YES' : 'NO',
+    authCookieNames,
     hasSecret: !!process.env.NEXTAUTH_SECRET,
   })
 }
